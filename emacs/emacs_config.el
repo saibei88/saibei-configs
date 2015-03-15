@@ -1,41 +1,35 @@
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-(add-to-list 'load-path "~/.emacs.d/el-get/cl-lib")
-(add-to-list 'load-path "~/.emacs.d/ecb")
-;(add-to-list 'load-path "~/.emacs.d/el-get/autopair/")
+;(require 'package)
+(package-initialize)
+;(setq package-archives '(
+;			 ("melpa" . "http://melpa.milkbox.net/packages/")))
 
-(setenv "PYMACS_PYTHON" "python2.7")
-;;;跳转到指定行
-(global-set-key (kbd "C-c C-g") 'goto-line)
-;;;; 关闭启动画面
-(setq inhibit-startup-message t)
+(package-refresh-contents)
+(defun install-if-needed (package)
+  (unless (package-installed-p package)
+    (package-install package)))
 
-;(require 'autopair)
-;(autopair-global-mode) ;; enable autopair in all buffers
-
-(require 'package)
-(add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/"))
-
-(require 'ecb)
-;(require 'ecb-autoloads)
-
-
-
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
-
-(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
-(el-get 'sync)
-
+(setq to-install
+      '(python-mode magit yasnippet auto-complete autopair find-file-in-repository flycheck))  
+(require 'auto-complete)
+(require 'auto-complete-config)
+(ac-config-default)
+(require 'autopair)
+(autopair-global-mode) ;; enable autopair in all buffers
+(require 'auto-complete)
+(global-auto-complete-mode t)
+(ac-ropemacs-initialize)
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (cond ((file-exists-p ".ropeproject")
+		   (rope-open-project default-directory))
+		  ((file-exists-p "../.ropeproject")
+		   (rope-open-project (concat default-directory "..")))
+		  )))
 (require 'python-mode)
 (setq-default py-shell-name "/usr/bin/ipython")
 (setq-default py-ipython-command "/usr/bin/ipython")
 (setq-default py-python-command "/usr/bin/python2.7")
 (setq-default python-shell-interpreter "/usr/bin/python2.7")
-
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
 (require 'pymacs)
@@ -48,34 +42,14 @@
 (pymacs-load "ropemacs" "rope-")
 (setq ropemacs-enable-autoimport t)
 
-(defun electric-pair ()
-  "If at end of line, insert character pair without surrounding spaces.
-    Otherwise, just insert the typed character."
-  (interactive)
-  (if (eolp) (let (parens-require-spaces) (insert-pair)) (self-insert-command 1)))
+(setenv "PYMACS_PYTHON" "python2.7")
+;;;跳转到指定行
+(global-set-key (kbd "C-c C-g") 'goto-line)
+;;;; 关闭启动画面
+(setq inhibit-startup-message t)
 
-(add-hook 'python-mode-hook
-	  (lambda ()
-	    (define-key python-mode-map "\"" 'electric-pair)
-	    (define-key python-mode-map "\'" 'electric-pair)
-	    (define-key python-mode-map "(" 'electric-pair)
-	    (define-key python-mode-map "[" 'electric-pair)
-	    (define-key python-mode-map "{" 'electric-pair)))
-
-(require 'cl-lib)
-(require 'auto-complete)
-(global-auto-complete-mode t)
-
-(ac-ropemacs-initialize)
-(add-hook 'python-mode-hook
-	  (lambda ()
-	    (cond ((file-exists-p ".ropeproject")
-		   (rope-open-project default-directory))
-		  ((file-exists-p "../.ropeproject")
-		   (rope-open-project (concat default-directory "..")))
-		  )))
-
-
+;(add-to-list 'load-path "~/.emacs.d/el-get/cl-lib")
+;(require 'cl-lib)
 (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
   (flet ((process-list ())) ad-do-it))
