@@ -1,0 +1,13 @@
+http://wikemacs.org/wiki/Python#Refactoring
+
+pip install jedi service_factory
+package-install jedi anaconda-mode
+
+git clone https://github.com/akaihola/flymake-python
+cp  pyflymake.py ~/.emacs.d
+
+apt-get  pep8 pychecker pylint
+package-install nose
+
+
+
