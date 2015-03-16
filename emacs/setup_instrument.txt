@@ -11,3 +11,8 @@ package-install nose
 
 
 
+Keybinding 	Description
+M-. 		anaconda-mode-goto-definitions
+M-* 		anaconda-nav-pop-marker
+M-? 		anaconda-mode-view-doc  #C-c r
+M-r 		anaconda-mode-usages
